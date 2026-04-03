@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ property.title }}{% endblock %}
+
+{% block main %}
+<div class="row justify-content-center mt-3">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-sm">
+            <div class="row g-0">
+                <div class="col-md-5">
+                    <img
+                        src="{{ url_for('static', filename='uploads/' + property.photo) }}"
+                        class="img-fluid rounded-start h-100 object-fit-cover"
+                        alt="{{ property.title }}"
+                        style="max-height: 420px; width: 100%; object-fit: cover;"
+                    >
+                </div>
+                <div class="col-md-7">
+                    <div class="card-body p-4">
+                        <h3 class="fw-bold mb-3">{{ property.title }}</h3>
+
+                        <div class="d-flex gap-2 mb-3">
+                            <span class="badge price-badge fs-6">${{ "{:,.0f}".format(property.price) }}</span>
+                            <span class="badge type-badge fs-6">{{ property.property_type }}</span>
+                        </div>
+
+                        <p class="text-muted mb-4">{{ property.description }}</p>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-door-open fs-5 text-secondary"></i>
+                                    <span>{{ property.no_of_rooms }} Bedroom{{ 's' if property.no_of_rooms != 1 }}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-water fs-5 text-secondary"></i>
+                                    <span>{{ property.no_of_bathrooms }} Bathroom{{ 's' if property.no_of_bathrooms != 1 }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2 mb-4">
+                            <i class="bi bi-geo-alt fs-5 text-secondary"></i>
+                            <span>{{ property.location }}</span>
+                        </div>
+
+                        <a href="mailto:realtor@project1.com" class="btn btn-property">
+                            Email Realtor
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

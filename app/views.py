@@ -5,9 +5,12 @@ Werkzeug Documentation:  https://werkzeug.palletsprojects.com/
 This file contains the routes for your application.
 """
 
-from app import app
-from flask import render_template, request, redirect, url_for
-
+from app import app, db
+from flask import render_template, request, redirect, url_for, flash
+import os
+from werkzeug.utils import secure_filename
+from app.models import Property
+from app.forms import PropertyForm
 
 ###
 # Routing for your application.
@@ -24,6 +27,46 @@ def about():
     """Render the website's about page."""
     return render_template('about.html', name="Mary Jane")
 
+
+@app.route('/properties/create', methods=['GET', 'POST'])
+def create_property():
+    form = PropertyForm()
+    if form.validate_on_submit():
+        photo = form.photo.data
+        filename = secure_filename(photo.filename)
+        upload_folder = app.config['UPLOAD_FOLDER']
+        os.makedirs(upload_folder, exist_ok=True)
+        photo.save(os.path.join(upload_folder, filename))
+
+        new_property = Property(
+            title=form.title.data,
+            description=form.description.data,
+            no_of_rooms=form.no_of_rooms.data,
+            no_of_bathrooms=form.no_of_bathrooms.data,
+            price=form.price.data,
+            property_type=form.property_type.data,
+            location=form.location.data,
+            photo=filename
+        )
+        db.session.add(new_property)
+        db.session.commit()
+
+        flash('Property was successfully added!', 'success')
+        return redirect(url_for('properties'))
+
+    return render_template('create_property.html', form=form)
+
+
+@app.route('/properties')
+def properties():
+    all_properties = Property.query.order_by(Property.created_at.desc()).all()
+    return render_template('properties.html', properties=all_properties)
+
+
+@app.route('/properties/<int:propertyid>')
+def property_detail(propertyid):
+    prop = Property.query.get_or_404(propertyid)
+    return render_template('property_detail.html', property=prop)
 
 ###
 # The functions below should be applicable to all Flask apps.
